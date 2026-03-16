@@ -83,3 +83,4 @@ ai-study-buddy/
 
 > An end-to-end NLP application implementing retrieval-augmented generation — extracting and chunking text from PDF documents, injecting it as context into a large language model via API, and building a conversational interface with auto-generated assessments on top.
 > Work on it (proper rag and vector embeddings and maybe add a feature so it can host multiple languages, and even a youtube video summarizer)
+> The current implementation supports documents of any size for extraction, but optimal performance is on documents up to approximately 10-15 pages. For larger documents, proper vector-based RAG with FAISS would be the next step.
