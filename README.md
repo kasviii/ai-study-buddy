@@ -3,7 +3,7 @@
 An AI-powered study assistant that lets you chat with any PDF, generate quizzes, and get instant summaries — powered by Llama 3 (via Groq) and built with Python + Streamlit.
 
 ## Live Demo
-[https://your-app.streamlit.app](https://ai-study-buddy-kasvii.streamlit.app/)
+[https://ai-study-buddy-kasvii.streamlit.app/](https://ai-study-buddy-kasvii.streamlit.app/)
 
 ---
 
