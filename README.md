@@ -78,29 +78,8 @@ ai-study-buddy/
 └── README.md           # This file
 ```
 
-## Local Setup
 
-```bash
-pip install -r requirements.txt
-streamlit run app.py
-```
-
-Create `.streamlit/secrets.toml` and add:
-```toml
-GROQ_API_KEY = "your_key_here"
-```
-
----
-
-## Course Details
-
-- **Course:** CSE3201 — Machine Learning
-- **Program:** B.Tech CSE, Semester VI
-- **Institution:** Manipal University Jaipur
-- **Session:** Jan–May 2026
-
----
-
-## One-Line Project Description
+## For me
 
 > An end-to-end NLP application implementing retrieval-augmented generation — extracting and chunking text from PDF documents, injecting it as context into a large language model via API, and building a conversational interface with auto-generated assessments on top.
+> Work on it (proper rag and vector embeddings and maybe add a feature so it can host multiple languages, and even a youtube video summarizer)
