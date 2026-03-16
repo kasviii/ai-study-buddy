@@ -58,9 +58,14 @@ def extract_pdf_text(file) -> str:
     return full_text
 
 
-def chunk_text(text: str, max_chars: int = 3000) -> str:
-    return text[:max_chars]
 
+def chunk_text(text: str, max_chars: int = 5000) -> str:
+    if len(text) <= max_chars:
+        return text
+    front = int(max_chars * 0.6)
+    back = max_chars - front
+    sep = chr(10) + "..." + chr(10)
+    return text[:front] + sep + text[-back:]
 
 def ask_groq(system: str, user: str, history=None) -> str:
     if history is None:
@@ -71,9 +76,9 @@ def ask_groq(system: str, user: str, history=None) -> str:
             messages.append(h)
         messages.append({"role": "user", "content": user})
         response = client.chat.completions.create(
-            model="llama3-8b-8192",
+            model="llama-3.1-8b-instant",
             messages=messages,
-            max_tokens=800,
+            max_tokens=1024,
             temperature=0.7
         )
         return response.choices[0].message.content
@@ -92,7 +97,7 @@ def generate_quiz(text: str, num_q: int = 5) -> list:
         "Return ONLY a JSON array, nothing else. Format:\n"
         '[{"q":"Question?","options":["A) opt1","B) opt2","C) opt3","D) opt4"],'
         '"answer":"A) opt1","explanation":"Why this is correct."}]\n\n'
-        "Document:\n" + chunk_text(text, 3000)
+        "Document:\n" + chunk_text(text, 5000)
     )
     raw = ask_groq(
         "You are a quiz generator. Return only valid JSON arrays, no markdown, no extra text.",
@@ -112,7 +117,7 @@ def generate_summary(text: str) -> str:
         "1. Main topic (1 sentence)\n"
         "2. Key concepts covered (bullet points)\n"
         "3. Important takeaways (2-3 sentences)\n\n"
-        "Document:\n" + chunk_text(text, 3000)
+        "Document:\n" + chunk_text(text, 5000)
     )
     return ask_groq("You are a helpful academic summarizer.", prompt)
 
@@ -122,7 +127,7 @@ def quick_ask(question: str):
         st.error("Groq API key not found.")
         return
     st.session_state.messages.append({"role": "user", "content": question})
-    sys_prompt = "You are an expert academic tutor.\n\nDocument:\n" + chunk_text(st.session_state.pdf_text)
+    sys_prompt = "You are an expert academic tutor.\n\nDocument:\n" + chunk_text(st.session_state.pdf_text, 5000)
     with st.spinner("Thinking..."):
         reply = ask_groq(sys_prompt, question, [])
     st.session_state.messages.append({"role": "assistant", "content": reply})
@@ -227,7 +232,7 @@ with tab1:
             sys_prompt = (
                 "You are an expert academic tutor. Answer questions based on the document. "
                 "If the answer is not in the document, say so.\n\nDocument:\n"
-                + chunk_text(st.session_state.pdf_text)
+                + chunk_text(st.session_state.pdf_text, 5000)
             )
             with st.spinner("Thinking..."):
                 reply = ask_groq(sys_prompt, user_input, st.session_state.messages[:-1])
