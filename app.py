@@ -210,11 +210,27 @@ if "summary" not in st.session_state:
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
 def extract_pdf_text(file) -> str:
-    doc = fitz.open(stream=file.read(), filetype="pdf")
-    text = ""
+    raw = file.read()
+    doc = fitz.open(stream=raw, filetype="pdf")
+    pages_text = []
     for page in doc:
-        text += page.get_text()
-    return text.strip()
+        # extract text block by block (works better for slide PDFs)
+        blocks = page.get_text("blocks")
+        page_content = " ".join(
+            b[4].strip() for b in blocks
+            if isinstance(b[4], str) and b[4].strip()
+        )
+        if page_content.strip():
+            pages_text.append(page_content.strip())
+    full_text = "
+
+".join(pages_text).strip()
+    # fallback: plain extraction if blocks returned nothing
+    if len(full_text) < 50:
+        doc2 = fitz.open(stream=raw, filetype="pdf")
+        full_text = "
+".join(p.get_text() for p in doc2).strip()
+    return full_text
 
 def chunk_text(text: str, max_chars: int = 3000) -> str:
     """Return a relevant context slice — keep it under token limits."""
