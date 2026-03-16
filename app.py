@@ -216,22 +216,28 @@ def extract_pdf_text(file) -> str:
         text += page.get_text()
     return text.strip()
 
-def chunk_text(text: str, max_chars: int = 6000) -> str:
+def chunk_text(text: str, max_chars: int = 3000) -> str:
     """Return a relevant context slice — keep it under token limits."""
     return text[:max_chars]
 
 def ask_groq(system: str, user: str, history: list = []) -> str:
-    messages = [{"role": "system", "content": system}]
-    for h in history[-6:]:  # last 3 turns
-        messages.append(h)
-    messages.append({"role": "user", "content": user})
-    response = client.chat.completions.create(
-        model="llama3-8b-8192",
-        messages=messages,
-        max_tokens=1024,
-        temperature=0.7
-    )
-    return response.choices[0].message.content
+    try:
+        messages = [{"role": "system", "content": system}]
+        for h in history[-4:]:
+            messages.append(h)
+        messages.append({"role": "user", "content": user})
+        response = client.chat.completions.create(
+            model="llama3-8b-8192",
+            messages=messages,
+            max_tokens=800,
+            temperature=0.7
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        err = str(e).lower()
+        if "too large" in err or "tokens" in err or "bad_request" in err or "400" in err:
+            return "The document is too large to process at once. Try uploading a shorter PDF or a single chapter."
+        return f"Error communicating with AI: {str(e)}"
 
 def generate_quiz(text: str, num_q: int = 5) -> list:
     prompt = f"""Based on this document content, generate exactly {num_q} multiple choice questions.
