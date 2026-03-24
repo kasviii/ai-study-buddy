@@ -78,7 +78,6 @@ ai-study-buddy/
 └── README.md           # This file
 ```
 
-
 ## For me
 
 > An end-to-end NLP application implementing retrieval-augmented generation — extracting and chunking text from PDF documents, injecting it as context into a large language model via API, and building a conversational interface with auto-generated assessments on top.
